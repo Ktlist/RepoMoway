@@ -13,8 +13,12 @@
 #define new DEBUG_NEW
 #endif
 
-
+#define MY_TIMER 1
+#define MY_SAMPLE_TIME 500
 CMoway moway;
+
+
+int estado, OnOff;
 
 // Cuadro de diálogo CAboutDlg utilizado para el comando Acerca de
 
@@ -68,6 +72,7 @@ BEGIN_MESSAGE_MAP(CMowayAspiracionDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDOK, &CMowayAspiracionDlg::OnBnClickedOk)
 	ON_BN_CLICKED(IDC_BUTTON1, &CMowayAspiracionDlg::OnBnClickedButton1)
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -162,21 +167,42 @@ void CMowayAspiracionDlg::OnBnClickedOk()
 {
 	// TODO: Agregue aquí su código de controlador de notificación de control
 	moway.ConnectMoway(23);
+	SetTimer(MY_TIMER, MY_SAMPLE_TIME, NULL);
 	//CDialogEx::OnOK();
 }
 
 
 void CMowayAspiracionDlg::OnBnClickedButton1()
 {
-	int lf = 0, clf = 0, crf = 0, rf = 0;
-	moway.ReadProximitySensors(&lf, &clf, &crf, &rf);
-	moway.SetSpeed(50, 50, CMoway::FORWARD, CMoway::FORWARD, 0, 0);
+	//Condicion activacion bucle
+	if (OnOff == 1)OnOff = 0;
+	else OnOff = 1;
 
-	if (clf >= 150){
-		moway.SetSpeed(15 - ((crf * 15) / 255), 0, CMoway::FORWARD, CMoway::FORWARD, 0, 0);
-	}
-	else if (crf >= 150){
-		moway.SetSpeed(0, 15 - ((clf * 15) / 255), CMoway::FORWARD, CMoway::FORWARD, 0, 0);
-	}
+	//----------------------------
+	
+
 	// TODO: Agregue aquí su código de controlador de notificación de control
+}
+
+
+void CMowayAspiracionDlg::OnTimer(UINT_PTR nIDEvent)
+{
+
+	// TODO: Agregue aquí su código de controlador de mensajes o llame al valor predeterminado
+	if (OnOff == 1){
+		int lf = 0, clf = 0, crf = 0, rf = 0;
+		moway.ReadProximitySensors(&lf, &clf, &crf, &rf);
+		moway.SetSpeed(50, 50, CMoway::FORWARD, CMoway::FORWARD, 0, 0);
+
+		if (clf >= 150){
+			moway.SetSpeed(15 - ((crf * 15) / 255), 0, CMoway::FORWARD, CMoway::FORWARD, 0, 0);
+		}
+		else if (crf >= 150){
+			moway.SetSpeed(0, 15 - ((clf * 15) / 255), CMoway::FORWARD, CMoway::FORWARD, 0, 0);
+		}
+	}
+	else
+		moway.MotorStop();
+
+	CDialogEx::OnTimer(nIDEvent);
 }
