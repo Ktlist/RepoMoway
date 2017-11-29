@@ -68,6 +68,7 @@ BEGIN_MESSAGE_MAP(CMowayAspiracionDlg, CDialogEx)
 	ON_WM_QUERYDRAGICON()
 	ON_BN_CLICKED(IDOK, &CMowayAspiracionDlg::OnBnClickedOk)
 	ON_BN_CLICKED(IDC_BUTTON1, &CMowayAspiracionDlg::OnBnClickedButton1)
+	ON_BN_CLICKED(IDC_BUTTON2, &CMowayAspiracionDlg::OnBnClickedButton2)
 END_MESSAGE_MAP()
 
 
@@ -161,22 +162,29 @@ HCURSOR CMowayAspiracionDlg::OnQueryDragIcon()
 void CMowayAspiracionDlg::OnBnClickedOk()
 {
 	// TODO: Agregue aquí su código de controlador de notificación de control
-	moway.ConnectMoway(23);
+	moway.ConnectMoway(1);
 	//CDialogEx::OnOK();
 }
-
 
 void CMowayAspiracionDlg::OnBnClickedButton1()
 {
 	int lf = 0, clf = 0, crf = 0, rf = 0;
 	moway.ReadProximitySensors(&lf, &clf, &crf, &rf);
-	moway.SetSpeed(50, 50, CMoway::FORWARD, CMoway::FORWARD, 0, 0);
-
-	if (clf >= 150){
+	if ((clf <= 99) && (crf <= 99)){
+	moway.SetSpeed(12, 12, CMoway::FORWARD, CMoway::FORWARD, 0, 0);
+	}	
+	else if (clf >= 100){
 		moway.SetSpeed(15 - ((crf * 15) / 255), 0, CMoway::FORWARD, CMoway::FORWARD, 0, 0);
 	}
-	else if (crf >= 150){
+	else if (crf >= 100){
 		moway.SetSpeed(0, 15 - ((clf * 15) / 255), CMoway::FORWARD, CMoway::FORWARD, 0, 0);
 	}
 	// TODO: Agregue aquí su código de controlador de notificación de control
+}
+
+
+void CMowayAspiracionDlg::OnBnClickedButton2()
+{
+	// TODO: Agregue aquí su código de controlador de notificación de control
+	moway.MotorStop();
 }
