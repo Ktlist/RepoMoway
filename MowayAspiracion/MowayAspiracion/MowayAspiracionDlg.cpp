@@ -168,6 +168,15 @@ void CMowayAspiracionDlg::OnBnClickedOk()
 
 void CMowayAspiracionDlg::OnBnClickedButton1()
 {
+	int lf = 0, clf = 0, crf = 0, rf = 0;
+	moway.ReadProximitySensors(&lf, &clf, &crf, &rf);
+	moway.SetSpeed(50, 50, CMoway::FORWARD, CMoway::FORWARD, 0, 0);
 
+	if (clf >= 150){
+		moway.SetSpeed(15 - ((crf * 15) / 255), 0, CMoway::FORWARD, CMoway::FORWARD, 0, 0);
+	}
+	else if (crf >= 150){
+		moway.SetSpeed(0, 15 - ((clf * 15) / 255), CMoway::FORWARD, CMoway::FORWARD, 0, 0);
+	}
 	// TODO: Agregue aquí su código de controlador de notificación de control
 }
